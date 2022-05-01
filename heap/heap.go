@@ -14,7 +14,7 @@ func newHeapTree(n int) *Tree {
 }
 
 func NewHeapTree(root int) *Tree {
-	return &Tree{value: root}
+	return newHeapTree(root)
 }
 
 var (

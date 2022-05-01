@@ -1,6 +1,7 @@
 package hashtable
 
 import (
+	"bytes"
 	"fmt"
 
 	"data-structures/utils"
@@ -58,11 +59,18 @@ func (ht *hashTable) Set(key, value interface{}) bool {
 	return true
 }
 
+func (ht *hashTable) compare(keyBytes []byte, pairKey interface{}) bool {
+	pairKeyBytes := utils.ToByte(pairKey)
+
+	return bytes.Equal(keyBytes, pairKeyBytes)
+}
+
 func (ht *hashTable) Get(key interface{}) interface{} {
 	hash := ht.hash(key)
+	keyBytes := utils.ToByte(key)
 
 	for _, p := range ht.bucket[hash] {
-		if p.key == key {
+		if ht.compare(keyBytes, p.key) {
 			return p.value
 		}
 	}
@@ -73,12 +81,12 @@ func (ht *hashTable) Get(key interface{}) interface{} {
 func (ht *hashTable) Delete(key interface{}) bool {
 	hash := ht.hash(key)
 	newBucket := make([]*pairT, 0, len(ht.bucket[hash]))
+	keyBytes := utils.ToByte(key)
 
 	for _, p := range ht.bucket[hash] {
-		if p.key == key {
-			continue
+		if !ht.compare(keyBytes, p.key) {
+			newBucket = append(newBucket, p)
 		}
-		newBucket = append(newBucket, p)
 	}
 	ht.bucket[hash] = newBucket
 
